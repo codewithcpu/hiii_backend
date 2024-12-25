@@ -1,6 +1,7 @@
 import debug from "debug";
 import express from "express";
 import http from "http";
+import path from "path";  // Import path module
 import { Server as SocketIO } from "socket.io";
 
 type UserToFollow = {
@@ -26,7 +27,13 @@ const app = express();
 const port =
   process.env.PORT || (process.env.NODE_ENV !== "development" ? 80 : 3002); // default port to listen
 
-app.use(express.static("public"));
+// Serve static files from the frontend dist directory
+app.use(express.static(path.join(__dirname, "frontend", "build")));
+
+// Wildcard route to serve index.html for all non-API requests
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
+});
 
 app.get("/", (req, res) => {
   res.send("Excalidraw collaboration server is up :)");
